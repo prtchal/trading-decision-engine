@@ -709,7 +709,8 @@
     document.getElementById('printBtn').addEventListener('click', () => window.print());
     document.getElementById('resetBtn').addEventListener('click', resetEngine);
     document.getElementById('tickerInput').addEventListener('input', e => { state.ticker = e.target.value.trim().toUpperCase(); render(); });
-    document.getElementById('marketTemplate').addEventListener('change', e => { state.template = e.target.value; render(); });
+    document.getElementById('marketTemplate').addEventListener('change', function () {const selectedValue = this.value; console.log('template changed to:', selectedValue); state.template = selectedValue; render();
+});
   
     document.querySelectorAll('.criterion').forEach(criterion => {
       const layer = Number(criterion.dataset.layer);
@@ -855,7 +856,7 @@
       document.getElementById('macroRatioInline').textContent = macroText;
       document.getElementById('stockRatioInline').textContent = stockRatio;
 
-      console.log("updateRatioUI running", state.template);
+      console.log('updateRatioUI running', state.template, document.getElementById('marketTemplate').value);
   }
   
     function render() {
