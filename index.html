@@ -189,6 +189,90 @@
       .app { padding: 14px; }
       .title-wrap h1 { font-size: 24px; }
     }
+    .cheat-table-wrap {
+  overflow-x: auto;
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #101830;
+  }
+  
+  .cheat-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1180px;
+  }
+  
+  .cheat-table th,
+  .cheat-table td {
+  padding: 12px 14px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.5;
+  }
+  
+  .cheat-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #15203a;
+  color: #dfe8ff;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  }
+  
+  .cheat-table tr:last-child td {
+  border-bottom: none;
+  }
+  
+  .cheat-level {
+  font-weight: 700;
+  color: white;
+  white-space: nowrap;
+  }
+  
+  .cheat-tag {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid var(--line);
+  background: #0f1730;
+  color: var(--muted);
+  white-space: nowrap;
+  }
+  
+  .cheat-tag.pass {
+  color: #c8f3e3;
+  background: rgba(30,166,114,.14);
+  border-color: rgba(30,166,114,.35);
+  }
+  
+  .cheat-tag.wait {
+  color: #ffebb9;
+  background: rgba(224,169,45,.14);
+  border-color: rgba(224,169,45,.35);
+  }
+  
+  .cheat-tag.fail {
+  color: #ffd6db;
+  background: rgba(209,75,90,.14);
+  border-color: rgba(209,75,90,.35);
+  }
+  
+  .cheat-note-strong {
+  color: #dfe8ff;
+  font-weight: 700;
+  }
+  
+  .cheat-mini {
+  color: var(--muted);
+  font-size: 12px;
+  }
   </style>
   </head>
   <body>
@@ -643,23 +727,256 @@
       </div>
     </div>
   
-    <div class="tab-content" id="tab-cheatsheet">
-      <div class="panel rule-card">
-        <h3>How ratio integration now works</h3>
-        <p>The engine still behaves exactly the same. The only upgrade is that Layer 1 and Layer 2 now tell you which ratio to open so your pass / wait / fail judgment is objective.</p>
-        <div class="rule-box"><strong>Layer 1:</strong> Sector ETF / benchmark ETF</div>
-        <div class="rule-box"><strong>Layer 2:</strong> Stock ticker / sector ETF</div>
-      </div>
-      <div class="panel rule-card">
-        <h3>Template guide</h3>
-        <div class="rule-box"><strong>Semiconductors:</strong> SOXX / QQQ, then Stock / SOXX</div>
-        <div class="rule-box"><strong>Software:</strong> IGV / QQQ, then Stock / IGV</div>
-        <div class="rule-box"><strong>Cybersecurity:</strong> HACK / QQQ, then Stock / HACK</div>
-        <div class="rule-box"><strong>Energy:</strong> XLE / SPY, then Stock / XLE</div>
-        <div class="rule-box"><strong>Financials:</strong> XLF / SPY, then Stock / XLF</div>
-        <div class="rule-box"><strong>Broad Tech:</strong> QQQ / SPY, then Stock / QQQ</div>
-      </div>
+   <div class="tab-content" id="tab-cheatsheet">
+  <div class="panel rule-card">
+    <h3>Decision Engine Reference Table</h3>
+    <p>
+      Use this as your live checklist while working through each level. It tells you exactly what to check,
+      what counts as pass / wait / fail, and how to interpret Risk-On vs Risk-Off.
+    </p>
+  
+    <div class="cheat-table-wrap">
+      <table class="cheat-table">
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Check</th>
+            <th>What to Look For</th>
+            <th>Pass</th>
+            <th>Wait</th>
+            <th>Fail</th>
+            <th>Notes / Interpretation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="cheat-level">Level 1</td>
+            <td>Global Liquidity Impulse (GLI)</td>
+            <td>Direction of liquidity backdrop</td>
+            <td><span class="cheat-tag pass">Rising</span></td>
+            <td><span class="cheat-tag wait">Flat / Neutral</span></td>
+            <td><span class="cheat-tag fail">Falling</span></td>
+            <td>Rising liquidity supports risk assets. Falling liquidity is a macro headwind.</td>
+          </tr>
+  
+          <tr>
+            <td class="cheat-level">Level 1</td>
+            <td>SPX Market Regime</td>
+            <td>Weekly price vs 200 SMA</td>
+            <td><span class="cheat-tag pass">Above + rising 200 SMA</span></td>
+            <td><span class="cheat-tag wait">Mixed / unclear</span></td>
+            <td><span class="cheat-tag fail">Below 200 SMA</span></td>
+            <td>
+              <span class="cheat-note-strong">Growth template:</span> Above 200 SMA = more Risk-On.<br>
+              <span class="cheat-note-strong">Gold / defensive trades:</span> Below 200 SMA can support Risk-Off flows.
+            </td>
+          </tr>
+  
+          <tr>
+            <td class="cheat-level">Level 1</td>
+            <td>Sentiment / Risk Appetite</td>
+            <td>Is growth leading or is capital hiding in safety?</td>
+            <td><span class="cheat-tag pass">Constructive</span></td>
+            <td><span class="cheat-tag wait">Neutral</span></td>
+            <td><span class="cheat-tag fail">Extreme / fragile</span></td>
+            <td>
+              <span class="cheat-note-strong">QQQ &gt; SPY</span> = Risk-On, growth leading.<br>
+              <span class="cheat-note-strong">SPY &gt; QQQ</span> = more defensive / Risk-Off.
+            </td>
+          </tr>
+  
+          <tr>
+            <td class="cheat-level">Level 1</td>
+            <td>Sector / Risk Rotation</td>
+            <td>Open the Layer 1 ratio and judge direction</td>
+            <td><span class="cheat-tag pass">Ratio rising</span></td>
+            <td><span class="cheat-tag wait">Ratio flat</span></td>
+            <td><span class="cheat-tag fail">Ratio falling</span></td>
+            <td>
+              Rising ratio = sector outperforming benchmark.<br>
+              Example: <span class="cheat-note-strong">SOXX / QQQ rising</span> = semis leading tech.<br>
+              Example: <span class="cheat-note-strong">QQQ / SPY rising</span> = growth leadership, Risk-On.
+            </td>
+          </tr>
+  
+          <tr>
+            <td class="cheat-level">Level 2</td>
+            <td>Stage Classification</td>
+            <td>Weekly price vs 200 SMA + structure</td>
+            <td><span class="cheat-tag pass">Stage 2</span></td>
+            <td><span class="cheat-tag wait">Early transition</span></td>
+            <td><span class="cheat-tag fail">Stage 1 / 3 / 4</span></td>
+            <td>For longs, Stage 2 is the ideal trend stage: above 200 SMA, rising slope, higher highs / higher lows.</td>
+          </tr>
+  
+          <tr>
+            <td class="cheat-level">Level 2</td>
+            <td>50 MA Position</td>
+            <td>Weekly price relative to 50 MA</td>
+            <td><span class="cheat-tag pass">Price above 50 MA</span></td>
+            <td><span class="cheat-tag wait">Near / testing</span></td>
+            <td><span class="cheat-tag fail">Price below 50 MA</span></td>
+            <td>Above = trend intact. Near/testing = acceptable only if structure still holds. Below = weakening.</td>
+          </tr>
+  
+          <tr>
+            <td class="cheat-level">Level 2</td>
+            <td>50 MA Slope</td>
+            <td>Direction of weekly 50 MA</td>
+            <td><span class="cheat-tag pass">Rising</span></td>
+            <td><span class="cheat-tag wait">Flat</span></td>
+            <td><span class="cheat-tag fail">Falling</span></td>
+            <td>Rising slope confirms momentum. Flat means transition. Falling means trend deterioration.</td>
+          </tr>
+  
+          <tr>
+            <td class="cheat-level">Level 2</td>
+            <td>Relative Strength vs Benchmark</td>
+            <td>Open the Layer 2 ratio and judge direction</td>
+            <td><span class="cheat-tag pass">Ratio rising</span></td>
+            <td><span class="cheat-tag wait">Ratio flat</span></td>
+            <td><span class="cheat-tag fail">Ratio falling</span></td>
+            <td>
+              Rising ratio = stock outperforming its sector ETF.<br>
+              Example: <span class="cheat-note-strong">NVDA / SOXX rising</span> = NVDA leading semis.
+            </td>
+          </tr>
+  
+          <tr>
+            <td class="cheat-level">Level 3</td>
+            <td>Setup Type</td>
+            <td>What kind of chart opportunity is present?</td>
+            <td><span class="cheat-tag pass">Trend pullback / breakout continuation</span></td>
+            <td><span class="cheat-tag wait">Loose / mixed</span></td>
+            <td><span class="cheat-tag fail">No valid setup</span></td>
+            <td>Best long setups are orderly pullbacks in Stage 2 or clean continuation breakouts.</td>
+          </tr>
+  
+          <tr>
+            <td class="cheat-level">Level 3</td>
+            <td>Pattern Quality</td>
+            <td>Clean structure or messy structure?</td>
+            <td><span class="cheat-tag pass">Clear base / pullback</span></td>
+            <td><span class="cheat-tag wait">Usable but imperfect</span></td>
+            <td><span class="cheat-tag fail">Messy / extended</span></td>
+            <td>Tight candles, clean support, and orderly pullbacks are best. Wide volatile action reduces quality.</td>
+          </tr>
+  
+          <tr>
+            <td class="cheat-level">Level 3</td>
+            <td>RSI Context</td>
+            <td>Momentum support</td>
+            <td><span class="cheat-tag pass">Supportive</span></td>
+            <td><span class="cheat-tag wait">Neutral</span></td>
+            <td><span class="cheat-tag fail">Unsupportive</span></td>
+            <td>
+              For long setups, RSI is strongest when it has reset but still supports trend continuation.<br>
+              Extremely weak RSI = poor timing.
+            </td>
+          </tr>
+  
+          <tr>
+            <td class="cheat-level">Level 3</td>
+            <td>Bollinger / Location</td>
+            <td>Where price sits inside the move</td>
+            <td><span class="cheat-tag pass">Good location</span></td>
+            <td><span class="cheat-tag wait">Acceptable</span></td>
+            <td><span class="cheat-tag fail">Poor location</span></td>
+            <td>
+              In trend-following, <span class="cheat-note-strong">middle band pullback</span> is usually best.<br>
+              Upper band = strong but can be extended. Lower band = weakness, not a preferred long entry.
+            </td>
+          </tr>
+  
+          <tr>
+            <td class="cheat-level">Level 4</td>
+            <td>Trigger Candle</td>
+            <td>Actual entry signal on daily chart</td>
+            <td><span class="cheat-tag pass">Confirmed</span></td>
+            <td><span class="cheat-tag wait">Developing</span></td>
+            <td><span class="cheat-tag fail">Rejected / failed</span></td>
+            <td>Use daily for trigger timing. Look for break of prior high, strong close, or bullish reversal at support.</td>
+          </tr>
+  
+          <tr>
+            <td class="cheat-level">Level 4</td>
+            <td>Volume Confirmation</td>
+            <td>Does volume support the move?</td>
+            <td><span class="cheat-tag pass">Supports move</span></td>
+            <td><span class="cheat-tag wait">Average</span></td>
+            <td><span class="cheat-tag fail">Weak / contradictory</span></td>
+            <td>Stronger volume improves breakout and reversal quality. Weak volume lowers confidence.</td>
+          </tr>
+  
+          <tr>
+            <td class="cheat-level">Level 4</td>
+            <td>Multi-Timeframe Alignment</td>
+            <td>Monthly, weekly, daily alignment</td>
+            <td><span class="cheat-tag pass">Monthly + weekly + daily</span></td>
+            <td><span class="cheat-tag wait">Monthly + weekly only</span></td>
+            <td><span class="cheat-tag fail">Misaligned</span></td>
+            <td>Weekly gives permission. Daily gives execution. Daily should not fight weekly.</td>
+          </tr>
+  
+          <tr>
+            <td class="cheat-level">Level 4</td>
+            <td>Market Support at Entry</td>
+            <td>Broad tape at the moment of entry</td>
+            <td><span class="cheat-tag pass">Supportive</span></td>
+            <td><span class="cheat-tag wait">Neutral</span></td>
+            <td><span class="cheat-tag fail">Against entry</span></td>
+            <td>If the market is breaking down hard, even good setups often fail.</td>
+          </tr>
+  
+          <tr>
+            <td class="cheat-level">Level 5</td>
+            <td>Reward-to-Risk</td>
+            <td>Math of upside vs downside</td>
+            <td><span class="cheat-tag pass">≥ 2:1</span></td>
+            <td><span class="cheat-tag wait">Near threshold</span></td>
+            <td><span class="cheat-tag fail">&lt; 2:1</span></td>
+            <td>If the math is poor, reject the trade even if the chart looks attractive.</td>
+          </tr>
+  
+          <tr>
+            <td class="cheat-level">Level 5</td>
+            <td>Stop Quality</td>
+            <td>Is stop placement logical?</td>
+            <td><span class="cheat-tag pass">Structural / ATR-aware</span></td>
+            <td><span class="cheat-tag wait">Needs work</span></td>
+            <td><span class="cheat-tag fail">Arbitrary</span></td>
+            <td>Stops should sit where the trade idea is invalidated, not at a random number.</td>
+          </tr>
+  
+          <tr>
+            <td class="cheat-level">Level 5</td>
+            <td>Target Quality</td>
+            <td>Is there a clear upside objective?</td>
+            <td><span class="cheat-tag pass">Clear target</span></td>
+            <td><span class="cheat-tag wait">Approximate</span></td>
+            <td><span class="cheat-tag fail">Unclear</span></td>
+            <td>Use resistance, measured moves, or range projections. Vague targets reduce decision quality.</td>
+          </tr>
+  
+          <tr>
+            <td class="cheat-level">Level 5</td>
+            <td>Tradeability / Liquidity</td>
+            <td>Can you enter and exit efficiently?</td>
+            <td><span class="cheat-tag pass">Good</span></td>
+            <td><span class="cheat-tag wait">Tradable but not ideal</span></td>
+            <td><span class="cheat-tag fail">Poor</span></td>
+            <td>Good liquidity and tighter spreads improve real execution quality.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+  
+    <div class="footer-note" style="margin-top:14px;">
+      Quick rule: <span class="cheat-note-strong">Layer 1 + Layer 2 must pass first.</span>
+      Layer 3 and Layer 4 control timing quality. Layer 5 decides if the trade is worth taking at all.
+    </div>
+  </div>
+  </div>
   
     <div class="tab-content" id="tab-backtest">
       <div class="panel phase-placeholder">
@@ -684,7 +1001,7 @@
       energy: { label: 'Energy', macro: 'XLE / SPY', macroCopy: 'Use this ratio to decide whether energy is leading the broad market. Rising ratio = energy outperforming SPY.', sector: 'XLE' },
       financials: { label: 'Financials', macro: 'XLF / SPY', macroCopy: 'Use this ratio to decide whether financials are leading the broad market. Rising ratio = financials outperforming SPY.', sector: 'XLF' },
       broadtech: { label: 'Broad Tech / Growth', macro: 'QQQ / SPY', macroCopy: 'Use this ratio to decide whether growth is leading the broad market. Rising ratio = tech outperforming SPY.', sector: 'QQQ' },
-      metals: {label: 'Precious Metals',macro: 'XAUUSD / DXY',macroCopy: 'Gold vs Dollar. Rising ratio = dollar weakening → bullish for gold.',sector: 'GLD',altMacro: 'GLD / SPY',altMacroCopy: 'Gold vs equities. Rising ratio = capital rotating into gold (risk-off).' },
+      metals: { label: 'Precious Metals', macro: 'XAUUSD / DXY', macroCopy: 'Gold vs Dollar. Rising ratio = dollar weakening → bullish for gold.', sector: 'GDX', altMacro: 'GLD / SPY', altMacroCopy: 'Gold vs equities. Rising ratio = capital rotating into gold (risk-off).' }
       custom: { label: 'Custom / Manual', macro: 'SECTOR ETF / BENCHMARK', macroCopy: 'Use your own sector ETF versus the correct benchmark. Rising ratio = sector leadership.', sector: 'SECTOR ETF' }
     };
     const layers = {
@@ -871,7 +1188,15 @@
       document.getElementById('ratioMacroMain').textContent = macroText;
       document.getElementById('ratioMacroCopy').textContent = macroCopy;
       document.getElementById('ratioStockMain').textContent = stockRatio;
-      document.getElementById('ratioStockCopy').textContent = `Use this ratio to decide whether ${ticker} is outperforming ${tpl.sector}. Rising ratio = stock leadership inside the sector.`;
+      if (state.template === 'metals') {
+  if (ticker === 'GLD') {
+    document.getElementById('ratioStockCopy').textContent = 'Use this ratio to decide whether gold is outperforming equities. Rising ratio = defensive leadership / risk-off flow into gold.';
+  } else {
+    document.getElementById('ratioStockCopy').textContent = `Use this ratio to decide whether ${ticker} is outperforming gold miners. Rising ratio = stock leadership inside precious metals.`;
+  }
+  } else {
+  document.getElementById('ratioStockCopy').textContent = `Use this ratio to decide whether ${ticker} is outperforming ${tpl.sector}. Rising ratio = stock leadership inside the sector.`;
+  }
       document.getElementById('macroRatioInline').textContent = macroText;
       document.getElementById('stockRatioInline').textContent = stockRatio;
   
