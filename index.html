@@ -855,12 +855,17 @@
         macroCopy = `${tpl.macroCopy} Also confirm ${tpl.altMacro}: ${tpl.altMacroCopy}`;
       }
   
-      let stockRatio;
-      if (state.template === 'metals') {
-        stockRatio = `${ticker} / GLD`;
-      } else {
-        stockRatio = `${ticker} / ${tpl.sector}`;
-      }
+     let stockRatio;
+  
+  if (state.template === 'metals') {
+  if (ticker === 'GLD') {
+    stockRatio = 'GLD / SPY';
+  } else {
+    stockRatio = `${ticker} / GDX`;
+  }
+  } else {
+  stockRatio = `${ticker} / ${tpl.sector}`;
+  }
   
       document.getElementById('metricTemplate').textContent = tpl.label;
       document.getElementById('ratioMacroMain').textContent = macroText;
