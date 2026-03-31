@@ -854,6 +854,8 @@
       document.getElementById('ratioStockCopy').textContent = `Use this ratio to decide whether ${ticker} is outperforming ${tpl.sector}. Rising ratio = stock leadership inside the sector.`;
       document.getElementById('macroRatioInline').textContent = macroText;
       document.getElementById('stockRatioInline').textContent = stockRatio;
+
+      console.log("updateRatioUI running", state.template);
   }
   
     function render() {
