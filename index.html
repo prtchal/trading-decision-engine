@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trading Decision Engine</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #131a2e;
+      --panel-2: #18213a;
+      --text: #e8edf7;
+      --muted: #98a4c0;
+      --line: #2a3558;
+      --pass: #1ea672;
+      --fail: #d14b5a;
+      --wait: #e0a92d;
+      --locked: #5f6c89;
+      --accent: #5fa8ff;
+      --accent-2: #8a6dff;
+      --shadow: 0 12px 30px rgba(0,0,0,.28);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: linear-gradient(180deg, #0b1020 0%, #0d1427 100%);
+      color: var(--text);
+    }
+
+    .app { max-width: 1500px; margin: 0 auto; padding: 24px; }
+    .header {
+      display: flex; gap: 16px; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; margin-bottom: 18px;
+    }
+    .title-wrap h1 { margin: 0; font-size: 30px; letter-spacing: .2px; }
+    .title-wrap p { margin: 6px 0 0; color: var(--muted); max-width: 860px; }
+    .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+    input[type="text"] {
+      background: #0f1730; border: 1px solid var(--line); color: var(--text);
+      padding: 12px 14px; border-radius: 12px; outline: none; min-width: 220px;
+    }
+
+    .btn {
+      border: 1px solid var(--line); background: var(--panel-2); color: var(--text);
+      padding: 12px 14px; border-radius: 12px; cursor: pointer; transition: .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border: none; }
+
+    .tabs { display: flex; gap: 10px; margin: 10px 0 20px; flex-wrap: wrap; }
+    .tab {
+      padding: 12px 14px; border-radius: 999px; background: #121a32;
+      border: 1px solid var(--line); color: var(--muted); cursor: pointer; user-select: none;
+    }
+    .tab.active {
+      color: white; background: linear-gradient(135deg, rgba(95,168,255,.2), rgba(138,109,255,.2));
+      border-color: rgba(95,168,255,.5);
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .grid { display: grid; grid-template-columns: 1.35fr .65fr; gap: 20px; }
+    .panel {
+      background: rgba(19,26,46,.96); border: 1px solid var(--line);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+    }
+
+    .overview {
+      padding: 18px; margin-bottom: 18px; display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px;
+    }
+    .metric {
+      background: #101830; border: 1px solid var(--line);
+      border-radius: 16px; padding: 14px;
+    }
+    .metric .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+    .metric .value { font-size: 24px; margin-top: 8px; font-weight: 700; }
+    .metric .sub { color: var(--muted); font-size: 12px; margin-top: 4px; }
+
+    .section { padding: 18px; margin-bottom: 18px; }
+    .section-header {
+      display: flex; justify-content: space-between; gap: 12px; align-items: start;
+      margin-bottom: 14px; flex-wrap: wrap;
+    }
+    .section-title { margin: 0; font-size: 20px; }
+    .section-subtitle { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+
+    .gate-badge {
+      padding: 8px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      letter-spacing: .03em; border: 1px solid transparent; white-space: nowrap;
+    }
+    .gate-hard { color: #ffd8dd; background: rgba(209,75,90,.13); border-color: rgba(209,75,90,.35); }
+    .gate-soft { color: #ffe8b0; background: rgba(224,169,45,.13); border-color: rgba(224,169,45,.35); }
+
+    .layer.locked {
+      opacity: .62;
+      position: relative;
+      pointer-events: none;
+    }
+    .layer.locked::after {
+      content: 'Locked until prior layer passes';
+      position: absolute; top: 16px; right: 16px;
+      background: rgba(95,108,137,.16); border: 1px solid rgba(95,108,137,.35);
+      color: #c6cde0; padding: 7px 10px; border-radius: 999px; font-size: 12px;
+    }
+
+    .criteria-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
+    .criterion {
+      background: #101830; border: 1px solid var(--line); border-radius: 16px; padding: 14px;
+    }
+    .criterion h4 { margin: 0 0 10px; font-size: 15px; }
+    .option-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+
+    .option-btn {
+      border: 1px solid var(--line); background: #15203a; color: var(--text);
+      padding: 10px 12px; border-radius: 999px; cursor: pointer; font-size: 13px;
+      transition: .18s ease;
+    }
+    .option-btn:hover { transform: translateY(-1px); }
+    .option-btn.selected {
+      border-color: rgba(95,168,255,.7);
+      background: linear-gradient(135deg, rgba(95,168,255,.16), rgba(138,109,255,.16));
+      box-shadow: inset 0 0 0 1px rgba(95,168,255,.15);
+    }
+    .option-btn.pass.selected { border-color: rgba(30,166,114,.55); background: rgba(30,166,114,.16); }
+    .option-btn.fail.selected { border-color: rgba(209,75,90,.55); background: rgba(209,75,90,.16); }
+    .option-btn.wait.selected { border-color: rgba(224,169,45,.55); background: rgba(224,169,45,.16); }
+
+    .criterion-guide {
+      display: grid; gap: 7px; padding: 12px;
+      border-radius: 12px; background: rgba(15,23,48,.9); border: 1px solid var(--line);
+    }
+    .guide-line { font-size: 12px; line-height: 1.45; color: #cfd7ea; }
+    .guide-line strong {
+      display: inline-block; min-width: 48px; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .06em; font-size: 11px;
+    }
+
+    .layer-footer {
+      margin-top: 16px; display: flex; justify-content: space-between; gap: 12px;
+      align-items: center; flex-wrap: wrap; padding-top: 14px; border-top: 1px dashed var(--line);
+    }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px;
+      border-radius: 999px; font-weight: 700; font-size: 12px; letter-spacing: .03em;
+      border: 1px solid transparent;
+    }
+    .status-pass { color: #c8f3e3; background: rgba(30,166,114,.14); border-color: rgba(30,166,114,.35); }
+    .status-fail { color: #ffd6db; background: rgba(209,75,90,.14); border-color: rgba(209,75,90,.35); }
+    .status-wait { color: #ffebb9; background: rgba(224,169,45,.14); border-color: rgba(224,169,45,.35); }
+    .status-locked { color: #d3d9e7; background: rgba(95,108,137,.14); border-color: rgba(95,108,137,.35); }
+
+    .verdict-panel { padding: 18px; position: sticky; top: 16px; }
+    .verdict-box {
+      border-radius: 16px; border: 1px solid var(--line); background: #101830;
+      padding: 16px; margin-bottom: 14px;
+    }
+    .verdict-main { font-size: 28px; font-weight: 800; margin: 6px 0 0; }
+    .verdict-sub { color: var(--muted); margin-top: 6px; }
+    .summary-list { display: grid; gap: 10px; margin-top: 12px; }
+    .summary-item {
+      padding: 12px 14px; border-radius: 14px; background: #0f1730;
+      border: 1px solid var(--line); font-size: 14px;
+    }
+    .summary-item strong { display: block; margin-bottom: 4px; }
+    .mini-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+
+    .checklist { display: grid; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
+    .checklist li {
+      background: #101830; border: 1px solid var(--line);
+      border-radius: 14px; padding: 12px 14px;
+    }
+
+    .rule-card { padding: 18px; margin-bottom: 18px; }
+    .rule-card h3 { margin: 0 0 8px; }
+    .rule-card p { color: var(--muted); margin-top: 0; }
+    .rule-box {
+      padding: 14px; border-radius: 14px; background: #101830;
+      border: 1px solid var(--line); margin-top: 12px;
+    }
+    .phase-placeholder { padding: 26px; }
+    .phase-placeholder h2 { margin-top: 0; }
+    .phase-placeholder p { color: var(--muted); max-width: 800px; }
+
+    .kbd {
+      padding: 3px 7px; border-radius: 8px; background: #0b1225;
+      border: 1px solid var(--line); font-size: 12px;
+    }
+    .footer-note { color: var(--muted); font-size: 13px; margin-top: 10px; line-height: 1.5; }
+
+    @media (max-width: 1100px) {
+      .grid { grid-template-columns: 1fr; }
+      .verdict-panel { position: static; }
+      .overview { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+
+    @media (max-width: 760px) {
+      .criteria-grid { grid-template-columns: 1fr; }
+      .overview { grid-template-columns: 1fr; }
+      .app { padding: 14px; }
+      .title-wrap h1 { font-size: 24px; }
+    }
+
+    @media print {
+      body { background: white; color: black; }
+      .tabs, .header-actions, .btn { display: none !important; }
+      .panel, .criterion, .metric, .summary-item, .rule-box, .checklist li {
+        box-shadow: none; border-color: #ccc; background: white;
+      }
+      .grid { grid-template-columns: 1fr; }
+      .tab-content { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <div class="title-wrap">
+        <h1>Trading Decision Engine</h1>
+        <p>Sequential gated workflow for buy / sell decisions. Hard gates stop bad trade environments. Soft gates force patience. Built to support Phase 2 backtesting and watchlist scanning later.</p>
+      </div>
+      <div class="header-actions">
+        <input type="text" id="tickerInput" placeholder="Ticker (e.g. SOXL)" />
+        <button class="btn" id="printBtn" type="button">Print</button>
+        <button class="btn primary" id="resetBtn" type="button">Reset Engine</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="engine">Decision Engine</div>
+      <div class="tab" data-tab="cheatsheet">Cheat Sheet</div>
+      <div class="tab" data-tab="backtest">Phase 2: Backtest</div>
+      <div class="tab" data-tab="scanner">Phase 2: Scanner</div>
+    </div>
+
+    <div class="tab-content active" id="tab-engine">
+      <div class="grid">
+        <div class="main-col">
+          <div class="panel overview">
+            <div class="metric"><div class="label">Ticker</div><div class="value" id="metricTicker">—</div><div class="sub">Manual input for Phase 1</div></div>
+            <div class="metric"><div class="label">Current State</div><div class="value" id="metricState">Incomplete</div><div class="sub">Updates as layers are completed</div></div>
+            <div class="metric"><div class="label">Last Open Layer</div><div class="value" id="metricLayer">Layer 1</div><div class="sub">Sequential unlocking</div></div>
+            <div class="metric"><div class="label">Recommended Size</div><div class="value" id="metricSize">0%</div><div class="sub">Based on hard / soft gate outcome</div></div>
+          </div>
+
+          <div class="panel section layer" id="layer1">
+            <div class="section-header">
+              <div>
+                <h2 class="section-title">Layer 1 — Macro Regime</h2>
+                <p class="section-subtitle">Hard gate. If the environment is wrong, no trade. This layer decides whether risk is worth taking at all.</p>
+              </div>
+              <div class="gate-badge gate-hard">Hard Gate</div>
+            </div>
+            <div class="criteria-grid">
+              <div class="criterion" data-layer="1" data-criterion="gli">
+                <h4>Global Liquidity Impulse (GLI)</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">Rising</button>
+                  <button class="option-btn wait" data-value="wait" type="button">Flat / Neutral</button>
+                  <button class="option-btn fail" data-value="fail" type="button">Falling</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> Direction of global liquidity backdrop.</div>
+                  <div class="guide-line"><strong>Ideal</strong> Rising is best. Flat is caution. Falling is no-go.</div>
+                  <div class="guide-line"><strong>Tag</strong> Macro tailwind filter</div>
+                </div>
+              </div>
+              <div class="criterion" data-layer="1" data-criterion="spx">
+                <h4>SPX Market Regime</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">Above 200 SMA</button>
+                  <button class="option-btn wait" data-value="wait" type="button">Mixed / Unclear</button>
+                  <button class="option-btn fail" data-value="fail" type="button">Below 200 SMA</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> Broad market posture versus long-term trend.</div>
+                  <div class="guide-line"><strong>Ideal</strong> Above 200 SMA for risk-on. Mixed means caution. Below is defensive.</div>
+                  <div class="guide-line"><strong>Tag</strong> Market regime filter</div>
+                </div>
+              </div>
+              <div class="criterion" data-layer="1" data-criterion="sentiment">
+                <h4>Sentiment / Risk Appetite</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">Constructive</button>
+                  <button class="option-btn wait" data-value="wait" type="button">Neutral</button>
+                  <button class="option-btn fail" data-value="fail" type="button">Extreme / Fragile</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> Crowd positioning and emotional backdrop.</div>
+                  <div class="guide-line"><strong>Ideal</strong> Constructive is healthy. Neutral is okay but not strong. Extreme is danger.</div>
+                  <div class="guide-line"><strong>Tag</strong> Sentiment sanity check</div>
+                </div>
+              </div>
+              <div class="criterion" data-layer="1" data-criterion="rotation">
+                <h4>Sector / Risk Rotation</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">Into Sector</button>
+                  <button class="option-btn wait" data-value="wait" type="button">No Clear Rotation</button>
+                  <button class="option-btn fail" data-value="fail" type="button">Out of Sector</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> Whether money is rotating into your sector.</div>
+                  <div class="guide-line"><strong>Ideal</strong> Into sector is best. No clear flow means patience. Out of sector is avoid.</div>
+                  <div class="guide-line"><strong>Tag</strong> Relative flow confirmation</div>
+                </div>
+              </div>
+            </div>
+            <div class="layer-footer">
+              <div class="status-pill status-locked" id="layer1Status">Awaiting inputs</div>
+              <div class="footer-note" id="layer1Note">All criteria must be selected. Any fail = hard stop. Any wait = no trade yet.</div>
+            </div>
+          </div>
+
+          <div class="panel section layer locked" id="layer2">
+            <div class="section-header">
+              <div>
+                <h2 class="section-title">Layer 2 — Stage & Trend</h2>
+                <p class="section-subtitle">Hard gate. Buy leaders, not laggards. The stock must be in the correct stage and trend posture.</p>
+              </div>
+              <div class="gate-badge gate-hard">Hard Gate</div>
+            </div>
+            <div class="criteria-grid">
+              <div class="criterion" data-layer="2" data-criterion="stage">
+                <h4>Stage Classification</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">Stage 2</button>
+                  <button class="option-btn wait" data-value="wait" type="button">Early Transition</button>
+                  <button class="option-btn fail" data-value="fail" type="button">Stage 1 / 3 / 4</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> Primary market stage of the stock.</div>
+                  <div class="guide-line"><strong>Ideal</strong> Stage 2 only for longs. Early transition is watch. Other stages fail.</div>
+                  <div class="guide-line"><strong>Tag</strong> Trend eligibility</div>
+                </div>
+              </div>
+              <div class="criterion" data-layer="2" data-criterion="w50">
+                <h4>Weekly 50 MA Position</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">Price Above</button>
+                  <button class="option-btn wait" data-value="wait" type="button">Near / Testing</button>
+                  <button class="option-btn fail" data-value="fail" type="button">Price Below</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> Price relation to weekly trend support.</div>
+                  <div class="guide-line"><strong>Ideal</strong> Above is best. Near/testing means caution. Below weakens the setup.</div>
+                  <div class="guide-line"><strong>Tag</strong> Structure quality</div>
+                </div>
+              </div>
+              <div class="criterion" data-layer="2" data-criterion="slope">
+                <h4>50 MA Slope</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">Rising</button>
+                  <button class="option-btn wait" data-value="wait" type="button">Flat</button>
+                  <button class="option-btn fail" data-value="fail" type="button">Falling</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> Direction of the weekly moving average.</div>
+                  <div class="guide-line"><strong>Ideal</strong> Rising confirms trend. Flat is transition. Falling is not a long trend.</div>
+                  <div class="guide-line"><strong>Tag</strong> Trend confirmation</div>
+                </div>
+              </div>
+              <div class="criterion" data-layer="2" data-criterion="rs">
+                <h4>Relative Strength vs Benchmark</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">Rising</button>
+                  <button class="option-btn wait" data-value="wait" type="button">Flat</button>
+                  <button class="option-btn fail" data-value="fail" type="button">Falling</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> Stock performance relative to its benchmark.</div>
+                  <div class="guide-line"><strong>Ideal</strong> Rising RS is leadership. Flat is acceptable watchlist material. Falling is laggard behavior.</div>
+                  <div class="guide-line"><strong>Tag</strong> Leadership check</div>
+                </div>
+              </div>
+            </div>
+            <div class="layer-footer">
+              <div class="status-pill status-locked" id="layer2Status">Locked</div>
+              <div class="footer-note" id="layer2Note">Unlocked only after Layer 1 passes. Any fail = reject. Any wait = keep on watch, no entry.</div>
+            </div>
+          </div>
+
+          <div class="panel section layer locked" id="layer3">
+            <div class="section-header">
+              <div>
+                <h2 class="section-title">Layer 3 — Setup Quality</h2>
+                <p class="section-subtitle">Soft gate. This layer does not reject the idea forever, but it controls timing quality and whether you should wait for a better setup.</p>
+              </div>
+              <div class="gate-badge gate-soft">Soft Gate</div>
+            </div>
+            <div class="criteria-grid">
+              <div class="criterion" data-layer="3" data-criterion="setupType">
+                <h4>Setup Type</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">Trend Pullback</button>
+                  <button class="option-btn pass" data-value="pass" type="button">Breakout Continuation</button>
+                  <button class="option-btn wait" data-value="wait" type="button">Loose / Mixed</button>
+                  <button class="option-btn fail" data-value="fail" type="button">No Valid Setup</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> Broad setup family you are trading.</div>
+                  <div class="guide-line"><strong>Ideal</strong> Trend pullback or breakout continuation. Loose structure means wait.</div>
+                  <div class="guide-line"><strong>Tag</strong> Setup classification</div>
+                </div>
+              </div>
+              <div class="criterion" data-layer="3" data-criterion="pattern">
+                <h4>Pattern Quality</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">Clear Base / Pullback</button>
+                  <button class="option-btn wait" data-value="wait" type="button">Usable but Imperfect</button>
+                  <button class="option-btn fail" data-value="fail" type="button">Messy / Extended</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> Cleanliness of the visible chart structure.</div>
+                  <div class="guide-line"><strong>Ideal</strong> Clear base or orderly pullback. Imperfect can still be watchlist-worthy. Messy means wait.</div>
+                  <div class="guide-line"><strong>Tag</strong> Pattern clarity</div>
+                </div>
+              </div>
+              <div class="criterion" data-layer="3" data-criterion="rsi">
+                <h4>RSI Context</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">Supportive</button>
+                  <button class="option-btn wait" data-value="wait" type="button">Neutral</button>
+                  <button class="option-btn fail" data-value="fail" type="button">Unsupportive</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> RSI posture relative to setup type.</div>
+                  <div class="guide-line"><strong>Ideal</strong> Supportive pullback or reset. Neutral means wait for improvement. Unsupportive is weak timing.</div>
+                  <div class="guide-line"><strong>Tag</strong> Momentum context</div>
+                </div>
+              </div>
+              <div class="criterion" data-layer="3" data-criterion="bb">
+                <h4>Bollinger / Location</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">Good Location</button>
+                  <button class="option-btn wait" data-value="wait" type="button">Acceptable</button>
+                  <button class="option-btn fail" data-value="fail" type="button">Poor Location</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> Price location within the setup.</div>
+                  <div class="guide-line"><strong>Ideal</strong> Good location near support/reset. Acceptable is not ideal. Poor location means chasing.</div>
+                  <div class="guide-line"><strong>Tag</strong> Entry quality filter</div>
+                </div>
+              </div>
+            </div>
+            <div class="layer-footer">
+              <div class="status-pill status-locked" id="layer3Status">Locked</div>
+              <div class="footer-note" id="layer3Note">If setup is weak, wait. This is a timing-quality layer, not a permanent reject layer unless setup is clearly invalid.</div>
+            </div>
+          </div>
+
+          <div class="panel section layer locked" id="layer4">
+            <div class="section-header">
+              <div>
+                <h2 class="section-title">Layer 4 — Entry Trigger</h2>
+                <p class="section-subtitle">Soft / wait gate. Never enter on setup alone. You want the actual trigger candle and alignment.</p>
+              </div>
+              <div class="gate-badge gate-soft">Wait Gate</div>
+            </div>
+            <div class="criteria-grid">
+              <div class="criterion" data-layer="4" data-criterion="candle">
+                <h4>Trigger Candle</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">Confirmed</button>
+                  <button class="option-btn wait" data-value="wait" type="button">Developing</button>
+                  <button class="option-btn fail" data-value="fail" type="button">Rejected / Failed</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> Actual price-action trigger at the decision point.</div>
+                  <div class="guide-line"><strong>Ideal</strong> Confirmed trigger only. Developing is wait. Rejected candle means step back.</div>
+                  <div class="guide-line"><strong>Tag</strong> Execution trigger</div>
+                </div>
+              </div>
+              <div class="criterion" data-layer="4" data-criterion="volume">
+                <h4>Volume Confirmation</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">Supports Move</button>
+                  <button class="option-btn wait" data-value="wait" type="button">Average</button>
+                  <button class="option-btn fail" data-value="fail" type="button">Weak / Contradictory</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> Participation level behind the move.</div>
+                  <div class="guide-line"><strong>Ideal</strong> Volume should support the break or reversal. Average is okay. Weak is suspect.</div>
+                  <div class="guide-line"><strong>Tag</strong> Participation check</div>
+                </div>
+              </div>
+              <div class="criterion" data-layer="4" data-criterion="mtf">
+                <h4>Multi-Timeframe Alignment</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">Monthly + Weekly + Daily</button>
+                  <button class="option-btn wait" data-value="wait" type="button">Monthly + Weekly Only</button>
+                  <button class="option-btn fail" data-value="fail" type="button">Misaligned</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> Whether the timeframes are pointing in the same direction.</div>
+                  <div class="guide-line"><strong>Ideal</strong> All 3 aligned is best. Monthly + weekly only means wait for daily trigger.</div>
+                  <div class="guide-line"><strong>Tag</strong> Alignment filter</div>
+                </div>
+              </div>
+              <div class="criterion" data-layer="4" data-criterion="market">
+                <h4>Market Support at Entry</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">Supportive</button>
+                  <button class="option-btn wait" data-value="wait" type="button">Neutral</button>
+                  <button class="option-btn fail" data-value="fail" type="button">Against Entry</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> Broad market tone at the exact entry moment.</div>
+                  <div class="guide-line"><strong>Ideal</strong> Supportive tape is best. Neutral means caution. Against entry means wait.</div>
+                  <div class="guide-line"><strong>Tag</strong> Execution environment</div>
+                </div>
+              </div>
+            </div>
+            <div class="layer-footer">
+              <div class="status-pill status-locked" id="layer4Status">Locked</div>
+              <div class="footer-note" id="layer4Note">If trigger is not there yet, wait. Valid idea does not mean valid entry yet.</div>
+            </div>
+          </div>
+
+          <div class="panel section layer locked" id="layer5">
+            <div class="section-header">
+              <div>
+                <h2 class="section-title">Layer 5 — Risk / Reward</h2>
+                <p class="section-subtitle">Hard gate. If the math is bad, reject the trade no matter how good the chart looks.</p>
+              </div>
+              <div class="gate-badge gate-hard">Hard Gate</div>
+            </div>
+            <div class="criteria-grid">
+              <div class="criterion" data-layer="5" data-criterion="rr">
+                <h4>Reward-to-Risk</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">≥ 2:1</button>
+                  <button class="option-btn wait" data-value="wait" type="button">Near Threshold</button>
+                  <button class="option-btn fail" data-value="fail" type="button">&lt; 2:1</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> Whether the trade math supports the risk taken.</div>
+                  <div class="guide-line"><strong>Ideal</strong> At least 2:1. Near threshold is caution. Below 2:1 is reject.</div>
+                  <div class="guide-line"><strong>Tag</strong> Expectancy gate</div>
+                </div>
+              </div>
+              <div class="criterion" data-layer="5" data-criterion="stop">
+                <h4>Stop Quality</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">Structural / ATR-Aware</button>
+                  <button class="option-btn wait" data-value="wait" type="button">Needs Work</button>
+                  <button class="option-btn fail" data-value="fail" type="button">Arbitrary</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> Quality of stop placement.</div>
+                  <div class="guide-line"><strong>Ideal</strong> Structural and volatility-aware. Needs work means refine. Arbitrary is not allowed.</div>
+                  <div class="guide-line"><strong>Tag</strong> Risk control</div>
+                </div>
+              </div>
+              <div class="criterion" data-layer="5" data-criterion="target">
+                <h4>Target Quality</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">Clear Target</button>
+                  <button class="option-btn wait" data-value="wait" type="button">Approximate</button>
+                  <button class="option-btn fail" data-value="fail" type="button">Unclear</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> Clarity of the upside objective.</div>
+                  <div class="guide-line"><strong>Ideal</strong> Clear target from structure, range, or measured move. Approximate is caution.</div>
+                  <div class="guide-line"><strong>Tag</strong> Exit planning</div>
+                </div>
+              </div>
+              <div class="criterion" data-layer="5" data-criterion="liquidity">
+                <h4>Tradeability / Liquidity</h4>
+                <div class="option-row">
+                  <button class="option-btn pass" data-value="pass" type="button">Good</button>
+                  <button class="option-btn wait" data-value="wait" type="button">Tradable but Not Ideal</button>
+                  <button class="option-btn fail" data-value="fail" type="button">Poor</button>
+                </div>
+                <div class="criterion-guide">
+                  <div class="guide-line"><strong>What</strong> Ease of getting in and out efficiently.</div>
+                  <div class="guide-line"><strong>Ideal</strong> Good liquidity only. Tradable but not ideal reduces quality. Poor is reject.</div>
+                  <div class="guide-line"><strong>Tag</strong> Execution practicality</div>
+                </div>
+              </div>
+            </div>
+            <div class="layer-footer">
+              <div class="status-pill status-locked" id="layer5Status">Locked</div>
+              <div class="footer-note" id="layer5Note">Final execution gate. Hard fail here means reject the trade.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="side-col">
+          <div class="panel verdict-panel">
+            <div class="verdict-box" id="verdictBox">
+              <div class="mini-label">Final Verdict</div>
+              <div class="verdict-main" id="verdictMain">NO TRADE</div>
+              <div class="verdict-sub" id="verdictSub">Complete each layer in sequence. The engine will show whether to reject, wait, or enter.</div>
+            </div>
+
+            <div class="summary-list">
+              <div class="summary-item">
+                <strong>Why this engine exists</strong>
+                It separates <span class="kbd">Reject</span> from <span class="kbd">Wait</span>. Hard gates reject bad environments. Soft gates help you avoid forcing timing.
+              </div>
+              <div class="summary-item">
+                <strong>Current action</strong>
+                <span id="actionText">Start with Layer 1. No downstream layer matters until macro regime is acceptable.</span>
+              </div>
+              <div class="summary-item">
+                <strong>Failure reason</strong>
+                <span id="failReason">No failure detected yet.</span>
+              </div>
+              <div class="summary-item">
+                <strong>Next open layer</strong>
+                <span id="nextLayerText">Layer 1 — Macro Regime</span>
+              </div>
+            </div>
+
+            <ul class="checklist">
+              <li><strong>Hard gates:</strong> Layer 1, Layer 2, Layer 5</li>
+              <li><strong>Soft / wait gates:</strong> Layer 3, Layer 4</li>
+              <li><strong>Position sizing:</strong> 0% if reject or wait, 50% only if Layers 1 and 2 pass and Layers 3/4 are the only remaining wait states, 100% only if every criterion passes.</li>
+            </ul>
+
+            <div class="footer-note">
+              Phase 1 is manual and interactive. Phase 2 can later connect these exact rules to historical data for backtests and to live watchlists for alerts.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-cheatsheet">
+      <div class="panel rule-card">
+        <h3>Core Operating Rule</h3>
+        <p>Only trade when the market, trend, setup, trigger, and math all agree. Hard gates reject the idea. Soft gates tell you to wait for a better moment.</p>
+        <div class="rule-box"><strong>Hard gates:</strong> Macro Regime, Stage &amp; Trend, Risk / Reward</div>
+        <div class="rule-box"><strong>Soft / wait gates:</strong> Setup Quality, Entry Trigger</div>
+      </div>
+
+      <div class="panel rule-card">
+        <h3>Layer 1 — Macro Regime</h3>
+        <p>Goal: trade only when the environment is supportive. A good stock inside a bad environment is still a dangerous trade.</p>
+        <div class="rule-box">Pass only when liquidity, broad market, sentiment, and sector rotation are supportive.</div>
+        <div class="rule-box">Any fail = reject. Any neutral / wait = stand aside until conditions improve.</div>
+      </div>
+
+      <div class="panel rule-card">
+        <h3>Layer 2 — Stage &amp; Trend</h3>
+        <p>Goal: own leaders, not laggards. The stock should already be in or entering a healthy trend structure.</p>
+        <div class="rule-box">Look for Stage 2, price above weekly key average, rising slope, and rising relative strength.</div>
+        <div class="rule-box">Any fail = reject. Any wait = keep on watchlist, not actionable yet.</div>
+      </div>
+
+      <div class="panel rule-card">
+        <h3>Layer 3 — Setup Quality</h3>
+        <p>Goal: improve entry quality. This layer is about patience, not prediction.</p>
+        <div class="rule-box">Valid examples: constructive pullback, healthy base, tight continuation, supportive RSI / location.</div>
+        <div class="rule-box">Weak setup = wait. Clearly invalid setup = wait and reassess later.</div>
+      </div>
+
+      <div class="panel rule-card">
+        <h3>Layer 4 — Entry Trigger</h3>
+        <p>Goal: do not enter because something looks almost ready. Wait for actual confirmation.</p>
+        <div class="rule-box">Trigger candle, confirming volume, multi-timeframe alignment, and broad market support at the moment of entry.</div>
+        <div class="rule-box">If trigger is absent, wait. A valid idea is not the same as a valid entry.</div>
+      </div>
+
+      <div class="panel rule-card">
+        <h3>Layer 5 — Risk / Reward</h3>
+        <p>Goal: protect long-term expectancy. The setup can be beautiful, but if the math is bad, the trade is still bad.</p>
+        <div class="rule-box">Require at least 2:1 reward-to-risk, a logical stop, a clear target, and acceptable liquidity.</div>
+        <div class="rule-box">Any fail = reject, regardless of how good the chart looks.</div>
+      </div>
+
+      <div class="panel rule-card">
+        <h3>Execution Summary</h3>
+        <div class="rule-box">Reject = wrong environment, wrong trend, or bad math.</div>
+        <div class="rule-box">Wait = environment and trend acceptable, but timing still incomplete.</div>
+        <div class="rule-box">Enter starter or full size only when all prior conditions justify it.</div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-backtest">
+      <div class="panel phase-placeholder">
+        <h2>Phase 2 — Backtest Engine</h2>
+        <p>This tab is reserved for the next build step. The plan is to wire your exact layer logic to historical data so the engine can test whether a stock would have passed each layer on each historical date, then track entry, stop, target, reward-to-risk, and outcome distribution.</p>
+        <div class="rule-box">Planned features: rule toggles, historical replay, pass/fail logs per layer, expectancy, win rate, average hold time, and layer-specific attribution.</div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-scanner">
+      <div class="panel phase-placeholder">
+        <h2>Phase 2 — Live Watchlist Scanner</h2>
+        <p>This tab is reserved for the live scanner version. The plan is to evaluate a watchlist against these same sequential gates and surface only names that fully pass or are in a valid wait state, with reasons.</p>
+        <div class="rule-box">Planned features: watchlist import, automated gate evaluation, alert states, fail reason output, and ranking by readiness.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const layers = {
+      1: { type: 'hard', criteria: ['gli','spx','sentiment','rotation'], title: 'Layer 1 — Macro Regime' },
+      2: { type: 'hard', criteria: ['stage','w50','slope','rs'], title: 'Layer 2 — Stage & Trend' },
+      3: { type: 'soft', criteria: ['setupType','pattern','rsi','bb'], title: 'Layer 3 — Setup Quality' },
+      4: { type: 'soft', criteria: ['candle','volume','mtf','market'], title: 'Layer 4 — Entry Trigger' },
+      5: { type: 'hard', criteria: ['rr','stop','target','liquidity'], title: 'Layer 5 — Risk / Reward' }
+    };
+
+    const state = { ticker: '', selections: {} };
+
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
+    document.getElementById('resetBtn').addEventListener('click', resetEngine);
+    document.getElementById('tickerInput').addEventListener('input', (e) => {
+      state.ticker = e.target.value.trim().toUpperCase();
+      render();
+    });
+
+    document.querySelectorAll('.criterion').forEach(criterion => {
+      const layer = Number(criterion.dataset.layer);
+      const key = criterion.dataset.criterion;
+      criterion.querySelectorAll('.option-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const layerEl = document.getElementById('layer' + layer);
+          if (layerEl.classList.contains('locked')) return;
+          criterion.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          state.selections[key] = btn.dataset.value;
+          render();
+        });
+      });
+    });
+
+    function resetEngine() {
+      state.selections = {};
+      state.ticker = '';
+      document.getElementById('tickerInput').value = '';
+      document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+      render();
+    }
+
+    function evaluateLayer(layerNumber) {
+      const config = layers[layerNumber];
+      const values = config.criteria.map(c => state.selections[c]);
+      const allSelected = values.every(Boolean);
+
+      if (!allSelected) return { status: 'incomplete', reason: 'Awaiting inputs' };
+
+      const failExists = values.includes('fail');
+      const waitExists = values.includes('wait');
+      const passCount = values.filter(v => v === 'pass').length;
+
+      if (config.type === 'hard') {
+        if (failExists) return { status: 'fail', reason: 'Hard gate failed' };
+        if (waitExists) return { status: 'wait', reason: 'Hard gate not clean enough yet' };
+        return { status: 'pass', reason: `All ${passCount}/${values.length} criteria passed` };
+      }
+
+      if (failExists) return { status: 'wait', reason: 'Setup/trigger not ready — wait' };
+      if (waitExists) return { status: 'wait', reason: 'Promising but not complete — wait' };
+      return { status: 'pass', reason: `All ${passCount}/${values.length} criteria passed` };
+    }
+
+    function getUnlockedLayers(results) {
+      const unlocked = { 1: true };
+      for (let i = 2; i <= 5; i++) {
+        let priorPass = true;
+        for (let j = 1; j < i; j++) {
+          if (results[j].status !== 'pass') {
+            priorPass = false;
+            break;
+          }
+        }
+        unlocked[i] = priorPass;
+      }
+      return unlocked;
+    }
+
+    function computeEngineState() {
+      const layerResults = {};
+      for (let i = 1; i <= 5; i++) layerResults[i] = evaluateLayer(i);
+      const unlocked = getUnlockedLayers(layerResults);
+
+      let nextOpenLayer = 1;
+      for (let i = 1; i <= 5; i++) {
+        if (unlocked[i] && layerResults[i].status !== 'pass') {
+          nextOpenLayer = i;
+          break;
+        }
+        if (i === 5 && layerResults[i].status === 'pass') nextOpenLayer = 5;
+      }
+
+      let hardRejectAt = null;
+      for (const i of [1, 2, 5]) {
+        if (unlocked[i] && layerResults[i].status === 'fail') {
+          hardRejectAt = i;
+          break;
+        }
+      }
+
+      let firstWaitOrIncomplete = null;
+      for (let i = 1; i <= 5; i++) {
+        if (unlocked[i] && (layerResults[i].status === 'wait' || layerResults[i].status === 'incomplete')) {
+          firstWaitOrIncomplete = i;
+          break;
+        }
+      }
+
+      const allComplete = Object.values(layerResults).every(r => r.status !== 'incomplete');
+      const allPass = Object.values(layerResults).every(r => r.status === 'pass');
+
+      let verdict = 'NO TRADE';
+      let verdictSub = 'Complete each layer in sequence. The engine will show whether to reject, wait, or enter.';
+      let size = '0%';
+      let action = 'Start with Layer 1. No downstream layer matters until macro regime is acceptable.';
+      let failReason = 'No failure detected yet.';
+      let stateText = 'Incomplete';
+
+      if (hardRejectAt) {
+        verdict = 'REJECT';
+        verdictSub = `Hard gate failed at ${layers[hardRejectAt].title}.`;
+        action = `Reject this trade for now. Fix the failure at ${layers[hardRejectAt].title} before revisiting.`;
+        failReason = `${layers[hardRejectAt].title}: ${layerResults[hardRejectAt].reason}.`;
+        stateText = 'Rejected';
+      } else if (allPass && allComplete) {
+        verdict = 'FULL POSITION';
+        verdictSub = 'All five layers passed. Environment, trend, setup, trigger, and math align.';
+        size = '100%';
+        action = 'Trade is fully actionable under current manual inputs.';
+        failReason = 'No active failure or wait condition.';
+        stateText = 'Ready';
+      } else if (firstWaitOrIncomplete) {
+        if (firstWaitOrIncomplete >= 3 && layerResults[1].status === 'pass' && layerResults[2].status === 'pass') {
+          verdict = 'WAIT / STARTER ONLY';
+          verdictSub = `The engine is not fully green. ${layers[firstWaitOrIncomplete].title} is not clean enough yet.`;
+          size = '50%';
+          action = `Valid idea, but timing is incomplete. Wait for ${layers[firstWaitOrIncomplete].title} to improve.`;
+          failReason = `${layers[firstWaitOrIncomplete].title}: ${layerResults[firstWaitOrIncomplete].reason}.`;
+          stateText = 'Waiting';
+        } else {
+          verdict = 'NO TRADE';
+          verdictSub = `The engine is not fully green. ${layers[firstWaitOrIncomplete].title} must pass first.`;
+          size = '0%';
+          action = `Do not enter yet. ${layers[firstWaitOrIncomplete].title} must pass first.`;
+          failReason = `${layers[firstWaitOrIncomplete].title}: ${layerResults[firstWaitOrIncomplete].reason}.`;
+          stateText = 'Waiting';
+        }
+      }
+
+      return { layerResults, unlocked, verdict, verdictSub, size, action, failReason, nextOpenLayer, stateText };
+    }
+
+    function render() {
+      const engine = computeEngineState();
+
+      document.getElementById('metricTicker').textContent = state.ticker || '—';
+      document.getElementById('metricState').textContent = engine.stateText;
+      document.getElementById('metricLayer').textContent = 'Layer ' + engine.nextOpenLayer;
+      document.getElementById('metricSize').textContent = engine.size;
+
+      document.getElementById('verdictMain').textContent = engine.verdict;
+      document.getElementById('verdictSub').textContent = engine.verdictSub;
+      document.getElementById('actionText').textContent = engine.action;
+      document.getElementById('failReason').textContent = engine.failReason;
+      document.getElementById('nextLayerText').textContent = layers[engine.nextOpenLayer].title;
+
+      const verdictBox = document.getElementById('verdictBox');
+      verdictBox.style.borderColor = 'var(--line)';
+      if (engine.verdict === 'REJECT' || engine.verdict === 'NO TRADE') {
+        verdictBox.style.borderColor = 'rgba(209,75,90,.55)';
+      } else if (engine.verdict === 'FULL POSITION') {
+        verdictBox.style.borderColor = 'rgba(30,166,114,.55)';
+      } else {
+        verdictBox.style.borderColor = 'rgba(224,169,45,.55)';
+      }
+
+      for (let i = 1; i <= 5; i++) {
+        const layerEl = document.getElementById('layer' + i);
+        const statusEl = document.getElementById('layer' + i + 'Status');
+        const noteEl = document.getElementById('layer' + i + 'Note');
+        const unlocked = engine.unlocked[i];
+        const result = engine.layerResults[i];
+
+        layerEl.classList.toggle('locked', !unlocked);
+        statusEl.className = 'status-pill';
+
+        if (!unlocked) {
+          statusEl.classList.add('status-locked');
+          statusEl.textContent = 'Locked';
+          noteEl.textContent = 'Locked until prior layer fully passes.';
+          continue;
+        }
+
+        if (result.status === 'pass') {
+          statusEl.classList.add('status-pass');
+          statusEl.textContent = 'Pass';
+        } else if (result.status === 'fail') {
+          statusEl.classList.add('status-fail');
+          statusEl.textContent = 'Reject';
+        } else if (result.status === 'wait') {
+          statusEl.classList.add('status-wait');
+          statusEl.textContent = 'Wait';
+        } else {
+          statusEl.classList.add('status-locked');
+          statusEl.textContent = 'Awaiting inputs';
+        }
+        noteEl.textContent = result.reason;
+      }
+    }
+
+    render();
+  </script>
+</body>
+</html>
