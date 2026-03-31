@@ -1,6 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Trading Decision Engine — Ratio Enhanced</title>
@@ -178,7 +178,7 @@
     .phase-placeholder p { color: var(--muted); max-width: 800px; }
     .kbd { padding: 3px 7px; border-radius: 8px; background: #0b1225; border: 1px solid var(--line); font-size: 12px; }
     .footer-note { color: var(--muted); font-size: 13px; margin-top: 10px; line-height: 1.5; }
-
+  
     @media (max-width: 1100px) {
       .grid { grid-template-columns: 1fr; }
       .verdict-panel { position: static; }
@@ -190,8 +190,8 @@
       .title-wrap h1 { font-size: 24px; }
     }
   </style>
-</head>
-<body>
+  </head>
+  <body>
   <div class="app">
     <div class="header">
       <div class="title-wrap">
@@ -214,14 +214,14 @@
         <button class="btn primary" id="resetBtn" type="button">Reset Engine</button>
       </div>
     </div>
-
+  
     <div class="tabs">
       <div class="tab active" data-tab="engine">Decision Engine</div>
       <div class="tab" data-tab="cheatsheet">Cheat Sheet</div>
       <div class="tab" data-tab="backtest">Phase 2: Backtest</div>
       <div class="tab" data-tab="scanner">Phase 2: Scanner</div>
     </div>
-
+  
     <div class="tab-content active" id="tab-engine">
       <div class="grid">
         <div class="main-col">
@@ -231,11 +231,11 @@
             <div class="metric"><div class="label">Last Open Layer</div><div class="value" id="metricLayer">Layer 1</div><div class="sub">Sequential unlocking</div></div>
             <div class="metric"><div class="label">Recommended Size</div><div class="value" id="metricSize">0%</div><div class="sub">Based on hard / soft gate outcome</div></div>
           </div>
-
+  
           <div class="panel ratio-strip">
             <div class="ratio-card">
               <div class="ratio-title">Layer 1 Ratio — Sector / Market Rotation</div>
-              <div class="ratio-main" id="ratioMacroMain">SOXX / QQQ</div>
+              <div class="ratio-main" id="ratioMacroMain">—</div>
               <div class="ratio-copy" id="ratioMacroCopy">Use this ratio to decide whether the sector is rotating into leadership. Rising ratio = sector outperforming benchmark.</div>
             </div>
             <div class="ratio-card">
@@ -244,7 +244,7 @@
               <div class="ratio-copy" id="ratioStockCopy">Use this ratio to decide whether your stock is outperforming its sector ETF. Rising ratio = stock leadership inside the sector.</div>
             </div>
           </div>
-
+  
           <div class="panel section layer" id="layer1">
             <div class="section-header">
               <div>
@@ -267,7 +267,7 @@
                   <div class="guide-line"><strong>Tag</strong> Macro tailwind filter</div>
                 </div>
               </div>
-
+  
               <div class="criterion" data-layer="1" data-criterion="spx">
                 <h4>SPX Market Regime</h4>
                 <div class="option-row">
@@ -281,7 +281,7 @@
                   <div class="guide-line"><strong>Tag</strong> Market regime filter</div>
                 </div>
               </div>
-
+  
               <div class="criterion" data-layer="1" data-criterion="sentiment">
                 <h4>Sentiment / Risk Appetite</h4>
                 <div class="option-row">
@@ -295,7 +295,7 @@
                   <div class="guide-line"><strong>Tag</strong> Sentiment sanity check</div>
                 </div>
               </div>
-
+  
               <div class="criterion" data-layer="1" data-criterion="rotation">
                 <h4>Sector / Risk Rotation</h4>
                 <div class="option-row">
@@ -315,7 +315,7 @@
               <div class="footer-note" id="layer1Note">All criteria must be selected. Any fail = hard stop. Any wait = no trade yet.</div>
             </div>
           </div>
-
+  
           <div class="panel section layer locked" id="layer2">
             <div class="section-header">
               <div>
@@ -338,7 +338,7 @@
                   <div class="guide-line"><strong>Tag</strong> Trend eligibility</div>
                 </div>
               </div>
-
+  
               <div class="criterion" data-layer="2" data-criterion="w50">
                 <h4>Weekly 50 MA Position</h4>
                 <div class="option-row">
@@ -352,7 +352,7 @@
                   <div class="guide-line"><strong>Tag</strong> Structure quality</div>
                 </div>
               </div>
-
+  
               <div class="criterion" data-layer="2" data-criterion="slope">
                 <h4>50 MA Slope</h4>
                 <div class="option-row">
@@ -366,7 +366,7 @@
                   <div class="guide-line"><strong>Tag</strong> Trend confirmation</div>
                 </div>
               </div>
-
+  
               <div class="criterion" data-layer="2" data-criterion="rs">
                 <h4>Relative Strength vs Benchmark</h4>
                 <div class="option-row">
@@ -386,7 +386,7 @@
               <div class="footer-note" id="layer2Note">Unlocked only after Layer 1 passes. Any fail = reject. Any wait = keep on watch, no entry.</div>
             </div>
           </div>
-
+  
           <div class="panel section layer locked" id="layer3">
             <div class="section-header">
               <div>
@@ -410,7 +410,7 @@
                   <div class="guide-line"><strong>Tag</strong> Setup classification</div>
                 </div>
               </div>
-
+  
               <div class="criterion" data-layer="3" data-criterion="pattern">
                 <h4>Pattern Quality</h4>
                 <div class="option-row">
@@ -424,7 +424,7 @@
                   <div class="guide-line"><strong>Tag</strong> Pattern clarity</div>
                 </div>
               </div>
-
+  
               <div class="criterion" data-layer="3" data-criterion="rsi">
                 <h4>RSI Context</h4>
                 <div class="option-row">
@@ -438,7 +438,7 @@
                   <div class="guide-line"><strong>Tag</strong> Momentum context</div>
                 </div>
               </div>
-
+  
               <div class="criterion" data-layer="3" data-criterion="bb">
                 <h4>Bollinger / Location</h4>
                 <div class="option-row">
@@ -458,7 +458,7 @@
               <div class="footer-note" id="layer3Note">If setup is weak, wait. This is a timing-quality layer, not a permanent reject layer unless setup is clearly invalid.</div>
             </div>
           </div>
-
+  
           <div class="panel section layer locked" id="layer4">
             <div class="section-header">
               <div>
@@ -481,7 +481,7 @@
                   <div class="guide-line"><strong>Tag</strong> Execution trigger</div>
                 </div>
               </div>
-
+  
               <div class="criterion" data-layer="4" data-criterion="volume">
                 <h4>Volume Confirmation</h4>
                 <div class="option-row">
@@ -495,7 +495,7 @@
                   <div class="guide-line"><strong>Tag</strong> Participation check</div>
                 </div>
               </div>
-
+  
               <div class="criterion" data-layer="4" data-criterion="mtf">
                 <h4>Multi-Timeframe Alignment</h4>
                 <div class="option-row">
@@ -509,7 +509,7 @@
                   <div class="guide-line"><strong>Tag</strong> Alignment filter</div>
                 </div>
               </div>
-
+  
               <div class="criterion" data-layer="4" data-criterion="market">
                 <h4>Market Support at Entry</h4>
                 <div class="option-row">
@@ -529,7 +529,7 @@
               <div class="footer-note" id="layer4Note">If trigger is not there yet, wait. Valid idea does not mean valid entry yet.</div>
             </div>
           </div>
-
+  
           <div class="panel section layer locked" id="layer5">
             <div class="section-header">
               <div>
@@ -552,7 +552,7 @@
                   <div class="guide-line"><strong>Tag</strong> Expectancy gate</div>
                 </div>
               </div>
-
+  
               <div class="criterion" data-layer="5" data-criterion="stop">
                 <h4>Stop Quality</h4>
                 <div class="option-row">
@@ -566,7 +566,7 @@
                   <div class="guide-line"><strong>Tag</strong> Risk control</div>
                 </div>
               </div>
-
+  
               <div class="criterion" data-layer="5" data-criterion="target">
                 <h4>Target Quality</h4>
                 <div class="option-row">
@@ -580,7 +580,7 @@
                   <div class="guide-line"><strong>Tag</strong> Exit planning</div>
                 </div>
               </div>
-
+  
               <div class="criterion" data-layer="5" data-criterion="liquidity">
                 <h4>Tradeability / Liquidity</h4>
                 <div class="option-row">
@@ -601,7 +601,7 @@
             </div>
           </div>
         </div>
-
+  
         <div class="side-col">
           <div class="panel verdict-panel">
             <div class="verdict-box" id="verdictBox">
@@ -609,7 +609,7 @@
               <div class="verdict-main" id="verdictMain">NO TRADE</div>
               <div class="verdict-sub" id="verdictSub">Complete each layer in sequence. The engine will show whether to reject, wait, or enter.</div>
             </div>
-
+  
             <div class="summary-list">
               <div class="summary-item">
                 <strong>Ratio logic</strong>
@@ -628,13 +628,13 @@
                 <span id="nextLayerText">Layer 1 — Macro Regime</span>
               </div>
             </div>
-
+  
             <ul class="checklist">
               <li><strong>Hard gates:</strong> Layer 1, Layer 2, Layer 5</li>
               <li><strong>Soft / wait gates:</strong> Layer 3, Layer 4</li>
               <li><strong>Position sizing:</strong> 0% if reject or wait, 50% only if Layers 1 and 2 pass and Layers 3/4 are the only remaining wait states, 100% only if every criterion passes.</li>
             </ul>
-
+  
             <div class="footer-note">
               This keeps your original engine intact. Ratios are guidance upgrades, not a logic rewrite.
             </div>
@@ -642,7 +642,7 @@
         </div>
       </div>
     </div>
-
+  
     <div class="tab-content" id="tab-cheatsheet">
       <div class="panel rule-card">
         <h3>How ratio integration now works</h3>
@@ -660,14 +660,14 @@
         <div class="rule-box"><strong>Broad Tech:</strong> QQQ / SPY, then Stock / QQQ</div>
       </div>
     </div>
-
+  
     <div class="tab-content" id="tab-backtest">
       <div class="panel phase-placeholder">
         <h2>Phase 2 — Backtest Engine</h2>
         <p>The next step is to test these ratio-driven gates on history instead of checking them manually.</p>
       </div>
     </div>
-
+  
     <div class="tab-content" id="tab-scanner">
       <div class="panel phase-placeholder">
         <h2>Phase 2 — Live Watchlist Scanner</h2>
@@ -675,7 +675,7 @@
       </div>
     </div>
   </div>
-
+  
   <script>
     const templateMap = {
       semis: { label: 'Semiconductors', macro: 'SOXX / QQQ', macroCopy: 'Use this ratio to decide whether semiconductors are leading tech. Rising ratio = semis outperforming QQQ.', sector: 'SOXX' },
@@ -684,6 +684,7 @@
       energy: { label: 'Energy', macro: 'XLE / SPY', macroCopy: 'Use this ratio to decide whether energy is leading the broad market. Rising ratio = energy outperforming SPY.', sector: 'XLE' },
       financials: { label: 'Financials', macro: 'XLF / SPY', macroCopy: 'Use this ratio to decide whether financials are leading the broad market. Rising ratio = financials outperforming SPY.', sector: 'XLF' },
       broadtech: { label: 'Broad Tech / Growth', macro: 'QQQ / SPY', macroCopy: 'Use this ratio to decide whether growth is leading the broad market. Rising ratio = tech outperforming SPY.', sector: 'QQQ' },
+      metals: {label: 'Precious Metals',macro: 'XAUUSD / DXY',macroCopy: 'Gold vs Dollar. Rising ratio = dollar weakening → bullish for gold.',sector: 'GLD',altMacro: 'GLD / SPY',altMacroCopy: 'Gold vs equities. Rising ratio = capital rotating into gold (risk-off).' },
       custom: { label: 'Custom / Manual', macro: 'SECTOR ETF / BENCHMARK', macroCopy: 'Use your own sector ETF versus the correct benchmark. Rising ratio = sector leadership.', sector: 'SECTOR ETF' }
     };
     const layers = {
@@ -695,7 +696,7 @@
     };
     const state = { ticker: '', template: 'semis', selections: {} };
     function currentTemplate() { return templateMap[state.template]; }
-
+  
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -704,12 +705,12 @@
         document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
       });
     });
-
+  
     document.getElementById('printBtn').addEventListener('click', () => window.print());
     document.getElementById('resetBtn').addEventListener('click', resetEngine);
     document.getElementById('tickerInput').addEventListener('input', e => { state.ticker = e.target.value.trim().toUpperCase(); render(); });
     document.getElementById('marketTemplate').addEventListener('change', e => { state.template = e.target.value; render(); });
-
+  
     document.querySelectorAll('.criterion').forEach(criterion => {
       const layer = Number(criterion.dataset.layer);
       const key = criterion.dataset.criterion;
@@ -724,7 +725,7 @@
         });
       });
     });
-
+  
     function resetEngine() {
       state.selections = {};
       state.ticker = '';
@@ -734,7 +735,7 @@
       document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
       render();
     }
-
+  
     function evaluateLayer(layerNumber) {
       const config = layers[layerNumber];
       const values = config.criteria.map(c => state.selections[c]);
@@ -743,7 +744,7 @@
       const failExists = values.includes('fail');
       const waitExists = values.includes('wait');
       const passCount = values.filter(v => v === 'pass').length;
-
+  
       if (config.type === 'hard') {
         if (failExists) return { status: 'fail', reason: 'Hard gate failed' };
         if (waitExists) return { status: 'wait', reason: 'Hard gate not clean enough yet' };
@@ -753,7 +754,7 @@
       if (waitExists) return { status: 'wait', reason: 'Promising but not complete — wait' };
       return { status: 'pass', reason: `All ${passCount}/${values.length} criteria passed` };
     }
-
+  
     function getUnlockedLayers(results) {
       const unlocked = { 1: true };
       for (let i = 2; i <= 5; i++) {
@@ -765,39 +766,39 @@
       }
       return unlocked;
     }
-
+  
     function computeEngineState() {
       const layerResults = {};
       for (let i = 1; i <= 5; i++) layerResults[i] = evaluateLayer(i);
       const unlocked = getUnlockedLayers(layerResults);
-
+  
       let nextOpenLayer = 1;
       for (let i = 1; i <= 5; i++) {
         if (unlocked[i] && layerResults[i].status !== 'pass') { nextOpenLayer = i; break; }
         if (i === 5 && layerResults[i].status === 'pass') nextOpenLayer = 5;
       }
-
+  
       let hardRejectAt = null;
       for (const i of [1,2,5]) {
         if (unlocked[i] && layerResults[i].status === 'fail') { hardRejectAt = i; break; }
       }
-
+  
       let firstWaitOrIncomplete = null;
       for (let i = 1; i <= 5; i++) {
         if (unlocked[i] && (layerResults[i].status === 'wait' || layerResults[i].status === 'incomplete')) {
           firstWaitOrIncomplete = i; break;
         }
       }
-
+  
       const allComplete = Object.values(layerResults).every(r => r.status !== 'incomplete');
       const allPass = Object.values(layerResults).every(r => r.status === 'pass');
-
+  
       let verdict = 'NO TRADE';
       let verdictSub = 'Complete each layer in sequence. The engine will show whether to reject, wait, or enter.';
       let size = '0%';
       let action = 'Start with Layer 1. No downstream layer matters until macro regime is acceptable.';
       let failReason = 'No failure detected yet.';
-
+  
       if (hardRejectAt) {
         verdict = 'REJECT';
         verdictSub = `Hard gate failed at ${layers[hardRejectAt].title}.`;
@@ -823,23 +824,38 @@
           failReason = `${layers[firstWaitOrIncomplete].title}: ${layerResults[firstWaitOrIncomplete].reason}.`;
         }
       }
-
+  
       return { layerResults, unlocked, verdict, verdictSub, size, action, failReason, nextOpenLayer };
     }
-
+  
     function updateRatioUI() {
       const tpl = currentTemplate();
       const ticker = state.ticker || 'TICKER';
-      const stockRatio = `${ticker} / ${tpl.sector}`;
+  
+      let macroText = tpl.macro;
+      let macroCopy = tpl.macroCopy;
+  
+      if (state.template === 'metals') {
+        macroText = `${tpl.macro} + ${tpl.altMacro}`;
+        macroCopy = `${tpl.macroCopy} Also confirm ${tpl.altMacro}: ${tpl.altMacroCopy}`;
+      }
+  
+      let stockRatio;
+      if (state.template === 'metals') {
+        stockRatio = `${ticker} / GLD`;
+      } else {
+        stockRatio = `${ticker} / ${tpl.sector}`;
+      }
+  
       document.getElementById('metricTemplate').textContent = tpl.label;
-      document.getElementById('ratioMacroMain').textContent = tpl.macro;
-      document.getElementById('ratioMacroCopy').textContent = tpl.macroCopy;
+      document.getElementById('ratioMacroMain').textContent = macroText;
+      document.getElementById('ratioMacroCopy').textContent = macroCopy;
       document.getElementById('ratioStockMain').textContent = stockRatio;
       document.getElementById('ratioStockCopy').textContent = `Use this ratio to decide whether ${ticker} is outperforming ${tpl.sector}. Rising ratio = stock leadership inside the sector.`;
-      document.getElementById('macroRatioInline').textContent = tpl.macro;
+      document.getElementById('macroRatioInline').textContent = macroText;
       document.getElementById('stockRatioInline').textContent = stockRatio;
-    }
-
+  }
+  
     function render() {
       updateRatioUI();
       const engine = computeEngineState();
@@ -851,13 +867,13 @@
       document.getElementById('actionText').textContent = engine.action;
       document.getElementById('failReason').textContent = engine.failReason;
       document.getElementById('nextLayerText').textContent = layers[engine.nextOpenLayer].title;
-
+  
       const verdictBox = document.getElementById('verdictBox');
       verdictBox.style.borderColor = 'var(--line)';
       if (engine.verdict === 'REJECT' || engine.verdict === 'NO TRADE') verdictBox.style.borderColor = 'rgba(209,75,90,.55)';
       else if (engine.verdict === 'FULL POSITION') verdictBox.style.borderColor = 'rgba(30,166,114,.55)';
       else verdictBox.style.borderColor = 'rgba(224,169,45,.55)';
-
+  
       for (let i = 1; i <= 5; i++) {
         const layerEl = document.getElementById('layer' + i);
         const statusEl = document.getElementById('layer' + i + 'Status');
@@ -866,7 +882,7 @@
         const result = engine.layerResults[i];
         layerEl.classList.toggle('locked', !unlocked);
         statusEl.className = 'status-pill';
-
+  
         if (!unlocked) {
           statusEl.classList.add('status-locked');
           statusEl.textContent = 'Locked';
@@ -889,8 +905,8 @@
         noteEl.textContent = result.reason;
       }
     }
-
+  
     render();
   </script>
-</body>
-</html>
+  </body>
+  </html>
