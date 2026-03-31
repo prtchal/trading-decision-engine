@@ -695,7 +695,9 @@
       5: { type: 'hard', criteria: ['rr','stop','target','liquidity'], title: 'Layer 5 — Risk / Reward' }
     };
     const state = { ticker: '', template: 'semis', selections: {} };
-    function currentTemplate() { return templateMap[state.template]; }
+    function currentTemplate() { 
+      return templateMap[state.template]; 
+    }
   
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
@@ -706,14 +708,22 @@
       });
     });
   
-    document.getElementById('printBtn').addEventListener('click', () => window.print());
-    document.getElementById('resetBtn').addEventListener('click', resetEngine);
-    document.getElementById('tickerInput').addEventListener('input', e => { state.ticker = e.target.value.trim().toUpperCase(); render(); });
-    document.getElementById('marketTemplate').addEventListener('change', function () {
-      const selectedValue = this.value;
-      console.log('template changed to:', selectedValue);
-      state.template = selectedValue;
-      render();
+    document.getElementById('printBtn').addEventListener('click', () => {
+  window.print();
+  });
+  
+  document.getElementById('resetBtn').addEventListener('click', resetEngine);
+  
+  document.getElementById('tickerInput').addEventListener('input', (e) => {
+  state.ticker = e.target.value.trim().toUpperCase();
+  render();
+  });
+  
+  document.getElementById('marketTemplate').addEventListener('change', function () {
+  const selectedValue = this.value;
+  console.log('template changed to:', selectedValue);
+  state.template = selectedValue;
+  render();
   });
   
     document.querySelectorAll('.criterion').forEach(criterion => {
