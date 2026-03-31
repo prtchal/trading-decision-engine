@@ -1189,13 +1189,13 @@
       document.getElementById('ratioMacroCopy').textContent = macroCopy;
       document.getElementById('ratioStockMain').textContent = stockRatio;
       if (state.template === 'metals') {
-  if (ticker === 'GLD') {
-    document.getElementById('ratioStockCopy').textContent = 'Use this ratio to decide whether gold is outperforming equities. Rising ratio = defensive leadership / risk-off flow into gold.';
-  } else {
-    document.getElementById('ratioStockCopy').textContent = `Use this ratio to decide whether ${ticker} is outperforming gold miners. Rising ratio = stock leadership inside precious metals.`;
-  }
-  } else {
-  document.getElementById('ratioStockCopy').textContent = `Use this ratio to decide whether ${ticker} is outperforming ${tpl.sector}. Rising ratio = stock leadership inside the sector.`;
+        if (ticker === 'GLD') {
+          document.getElementById('ratioStockCopy').textContent = 'Use this ratio to decide whether gold is outperforming equities. Rising ratio = defensive leadership / risk-off flow into gold.';
+        } else {
+          document.getElementById('ratioStockCopy').textContent = `Use this ratio to decide whether ${ticker} is outperforming gold miners. Rising ratio = stock leadership inside precious metals.`;
+        }
+    } else {
+      document.getElementById('ratioStockCopy').textContent = `Use this ratio to decide whether ${ticker} is outperforming ${tpl.sector}. Rising ratio = stock leadership inside the sector.`;
   }
       document.getElementById('macroRatioInline').textContent = macroText;
       document.getElementById('stockRatioInline').textContent = stockRatio;
