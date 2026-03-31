@@ -995,15 +995,57 @@
   
   <script>
     const templateMap = {
-      semis: { label: 'Semiconductors', macro: 'SOXX / QQQ', macroCopy: 'Use this ratio to decide whether semiconductors are leading tech. Rising ratio = semis outperforming QQQ.', sector: 'SOXX' },
-      software: { label: 'Software', macro: 'IGV / QQQ', macroCopy: 'Use this ratio to decide whether software is leading tech. Rising ratio = software outperforming QQQ.', sector: 'IGV' },
-      cyber: { label: 'Cybersecurity', macro: 'HACK / QQQ', macroCopy: 'Use this ratio to decide whether cybersecurity is leading tech. Rising ratio = cyber outperforming QQQ.', sector: 'HACK' },
-      energy: { label: 'Energy', macro: 'XLE / SPY', macroCopy: 'Use this ratio to decide whether energy is leading the broad market. Rising ratio = energy outperforming SPY.', sector: 'XLE' },
-      financials: { label: 'Financials', macro: 'XLF / SPY', macroCopy: 'Use this ratio to decide whether financials are leading the broad market. Rising ratio = financials outperforming SPY.', sector: 'XLF' },
-      broadtech: { label: 'Broad Tech / Growth', macro: 'QQQ / SPY', macroCopy: 'Use this ratio to decide whether growth is leading the broad market. Rising ratio = tech outperforming SPY.', sector: 'QQQ' },
-      metals: { label: 'Precious Metals', macro: 'XAUUSD / DXY', macroCopy: 'Gold vs Dollar. Rising ratio = dollar weakening → bullish for gold.', sector: 'GDX', altMacro: 'GLD / SPY', altMacroCopy: 'Gold vs equities. Rising ratio = capital rotating into gold (risk-off).' },
-      custom: { label: 'Custom / Manual', macro: 'SECTOR ETF / BENCHMARK', macroCopy: 'Use your own sector ETF versus the correct benchmark. Rising ratio = sector leadership.', sector: 'SECTOR ETF' }
-    };
+  semis: {
+    label: 'Semiconductors',
+    macro: 'SOXX / QQQ',
+    macroCopy: 'Use this ratio to decide whether semiconductors are leading tech. Rising ratio = semis outperforming QQQ.',
+    sector: 'SOXX'
+  },
+  software: {
+    label: 'Software',
+    macro: 'IGV / QQQ',
+    macroCopy: 'Use this ratio to decide whether software is leading tech. Rising ratio = software outperforming QQQ.',
+    sector: 'IGV'
+  },
+  cyber: {
+    label: 'Cybersecurity',
+    macro: 'HACK / QQQ',
+    macroCopy: 'Use this ratio to decide whether cybersecurity is leading tech. Rising ratio = cyber outperforming QQQ.',
+    sector: 'HACK'
+  },
+  energy: {
+    label: 'Energy',
+    macro: 'XLE / SPY',
+    macroCopy: 'Use this ratio to decide whether energy is leading the broad market. Rising ratio = energy outperforming SPY.',
+    sector: 'XLE'
+  },
+  financials: {
+    label: 'Financials',
+    macro: 'XLF / SPY',
+    macroCopy: 'Use this ratio to decide whether financials are leading the broad market. Rising ratio = financials outperforming SPY.',
+    sector: 'XLF'
+  },
+  broadtech: {
+    label: 'Broad Tech / Growth',
+    macro: 'QQQ / SPY',
+    macroCopy: 'Use this ratio to decide whether growth is leading the broad market. Rising ratio = tech outperforming SPY.',
+    sector: 'QQQ'
+  },
+  metals: {
+    label: 'Precious Metals',
+    macro: 'XAUUSD / DXY',
+    macroCopy: 'Gold vs Dollar. Rising ratio = dollar weakening → bullish for gold.',
+    sector: 'GDX',
+    altMacro: 'GLD / SPY',
+    altMacroCopy: 'Gold vs equities. Rising ratio = capital rotating into gold (risk-off).'
+  },
+  custom: {
+    label: 'Custom / Manual',
+    macro: 'SECTOR ETF / BENCHMARK',
+    macroCopy: 'Use your own sector ETF versus the correct benchmark. Rising ratio = sector leadership.',
+    sector: 'SECTOR ETF'
+  }
+  };
     const layers = {
       1: { type: 'hard', criteria: ['gli','spx','sentiment','rotation'], title: 'Layer 1 — Macro Regime' },
       2: { type: 'hard', criteria: ['stage','w50','slope','rs'], title: 'Layer 2 — Stage & Trend' },
